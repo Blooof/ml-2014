@@ -25,9 +25,10 @@ public class Runner {
         try (BufferedReader input = new BufferedReader(new FileReader(FILENAME))) {
             input.lines().map(s -> {
                 String[] tokens = s.split(",");
-                double[] x = new double[2];
+                double[] x = new double[3];
                 x[0] = Double.parseDouble(tokens[0]) / 10_000;
                 x[1] = Double.parseDouble(tokens[1]) / 10;
+                x[2] = 1;
                 double y = Double.parseDouble(tokens[2]) / 1_000_000;
                 return new PointValuePair(x, y, false);
             }).forEach(original::add);
@@ -35,7 +36,7 @@ public class Runner {
         ErrorFunction errorFunction = new ErrorFunction(original);
         NonLinearConjugateGradientOptimizer optimizer = new NonLinearConjugateGradientOptimizer(
                 ConjugateGradientFormula.POLAK_RIBIERE, new SimplePointChecker<>(0.1, -1));
-        PointValuePair p = optimizer.optimize(MAX_EVAL, errorFunction, GoalType.MINIMIZE, new double[]{0, 0});
+        PointValuePair p = optimizer.optimize(MAX_EVAL, errorFunction, GoalType.MINIMIZE, new double[]{0, 0, 0});
         System.out.println(Arrays.toString(p.getPointRef()));
         System.out.println(p.getValue());
         LinearRegressionFunction regressionFunction = new LinearRegressionFunction(p.getPointRef());
@@ -44,9 +45,10 @@ public class Runner {
             while (true) {
                 String line = input.readLine();
                 String[] tokens = line.split(" ");
-                double[] x = new double[2];
+                double[] x = new double[3];
                 x[0] = Double.parseDouble(tokens[0]) / 10_000;
                 x[1] = Double.parseDouble(tokens[1]) / 10;
+                x[2] = 1;
                 System.out.println(regressionFunction.value(x) * 1_000_000);
             }
         }
