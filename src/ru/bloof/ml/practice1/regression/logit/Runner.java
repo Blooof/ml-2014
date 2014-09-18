@@ -33,6 +33,11 @@ public class Runner {
         System.out.println(Arrays.toString(pair.getPointRef()));
         System.out.println(pair.getValue());
 
+//        printOriginal(original, pair);
+    }
+
+    @SuppressWarnings("unused")
+    private static void printOriginal(List<PointValuePair> original, PointValuePair pair) {
         int correct = 0;
         for (PointValuePair p : original) {
             int actual = MathUtils.scalarMultiply(p.getPointRef(), pair.getPointRef()) >= 0 ? 1 : 0;
