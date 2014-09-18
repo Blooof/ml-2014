@@ -1,12 +1,11 @@
-package ru.bloof.ml.practice1.regression.linear;
+package ru.bloof.ml.practice1.regression.logit;
+
+import java.util.List;
 
 import org.apache.commons.math3.analysis.DifferentiableMultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import org.apache.commons.math3.optimization.PointValuePair;
-import org.apache.commons.math3.util.FastMath;
-
-import java.util.List;
 
 import ru.bloof.ml.practice1.MathUtils;
 
@@ -14,7 +13,8 @@ import ru.bloof.ml.practice1.MathUtils;
  * @author Oleg Larionov
  */
 public class ErrorFunction implements DifferentiableMultivariateFunction {
-    private List<PointValuePair> original;
+    private int count = 0;
+    private final List<PointValuePair> original;
 
     public ErrorFunction(List<PointValuePair> original) {
         this.original = original;
@@ -32,10 +32,13 @@ public class ErrorFunction implements DifferentiableMultivariateFunction {
 
     @Override
     public double value(double[] doubles) {
-        double total = 0;
+        System.out.println(count++);
+        double value = 0;
         for (PointValuePair pair : original) {
-            total += FastMath.pow(MathUtils.scalarMultiply(pair.getPointRef(), doubles) - pair.getValue(), 2);
+            double trY = pair.getValue() == 1 ? 1 : -1;
+            double scalar = MathUtils.scalarMultiply(pair.getPointRef(), doubles);
+            value += MathUtils.logitErrorFunction(scalar * trY);
         }
-        return total;
+        return value;
     }
 }
