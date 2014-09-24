@@ -7,14 +7,17 @@ import java.util.BitSet;
  */
 public class Rule {
     private BitSet x, y;
+    private double sup, conf;
 
-    public Rule(BitSet x, BitSet y) {
+    public Rule(BitSet x, BitSet y, double sup, double conf) {
         this.x = x;
         this.y = y;
+        this.sup = sup;
+        this.conf = conf;
     }
 
     @Override
     public String toString() {
-        return x + "->" + y;
+        return x + "->" + y + ":sup=" + sup + ",conf=" + conf;
     }
 }

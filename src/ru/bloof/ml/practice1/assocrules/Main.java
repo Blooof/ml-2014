@@ -80,7 +80,7 @@ public class Main {
         System.out.println(rules);
     }
 
-    private static void findRules(List<Rule> rules, Map<Long, Bucket> map, BitSet x, BitSet y) {
+    private static void findRules(List<Rule> rules, Map<Long, Bucket> buckets, BitSet x, BitSet y) {
         int setBit;
         int maxYBit = y.length();
         while ((setBit = x.nextSetBit(maxYBit)) != -1) {
@@ -90,12 +90,14 @@ public class Main {
 
             BitSet sum = (BitSet) _x.clone();
             sum.or(_y);
-            double value = count(map, sum) * 1. / count(map, _x);
+            double support = count(buckets, sum) * 1. / buckets.size();
+            double confidence = count(buckets, _x) * 1. / buckets.size();
+            double value = support / confidence;
             if (value >= MIN_CONF) {
-                rules.add(new Rule(_x, _y));
+                rules.add(new Rule(_x, _y, support, confidence));
             }
             if (_x.cardinality() > 1) {
-                findRules(rules, map, _x, _y);
+                findRules(rules, buckets, _x, _y);
             }
             maxYBit = setBit + 1;
         }
