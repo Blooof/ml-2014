@@ -59,7 +59,18 @@ public class Main {
                     }
                 }
             }
+            final Set<BitSet> checkPrevg = prevg;
             gi.removeIf(candidate -> {
+                BitSet check = (BitSet) candidate.clone();
+                int bit = 0;
+                while ((bit = check.nextSetBit(bit)) != -1) {
+                    check.clear(bit);
+                    if (!checkPrevg.contains(check)) {
+                        return true;
+                    }
+                    check.set(bit);
+                    bit++;
+                }
                 double value = count(buckets, candidate) * 1. / buckets.size();
                 return value < MIN_SUPPORT;
             });
