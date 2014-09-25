@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.optimization.GoalType;
 import org.apache.commons.math3.optimization.PointValuePair;
 import org.apache.commons.math3.optimization.SimpleValueChecker;
@@ -26,27 +27,28 @@ public class Runner {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILENAME))) {
             reader.lines().map(Runner::parse).forEachOrdered(original::add);
         }
-        ErrorFunction errorFunction = new ErrorFunction(original);
+        Pair<List<PointValuePair>, List<PointValuePair>> split = MathUtils.split(original, 0.8);
+        ErrorFunction errorFunction = new ErrorFunction(split.getLeft());
         NonLinearConjugateGradientOptimizer optimizer = new NonLinearConjugateGradientOptimizer(
                 ConjugateGradientFormula.POLAK_RIBIERE, new SimpleValueChecker(0.01, -1));
-        PointValuePair pair = optimizer.optimize(MAX_EVAL, errorFunction, GoalType.MINIMIZE, new double[6]);
-        System.out.println(Arrays.toString(pair.getPointRef()));
-        System.out.println(pair.getValue());
+        PointValuePair result = optimizer.optimize(MAX_EVAL, errorFunction, GoalType.MINIMIZE, new double[6]);
+        System.out.println(Arrays.toString(result.getPointRef()));
+        System.out.println(result.getValue());
 
-//        printOriginal(original, pair);
+        test(split.getRight(), result.getPointRef());
     }
 
     @SuppressWarnings("unused")
-    private static void printOriginal(List<PointValuePair> original, PointValuePair pair) {
+    private static void test(List<PointValuePair> original, double[] w) {
         int correct = 0;
         for (PointValuePair p : original) {
-            int actual = MathUtils.scalarMultiply(p.getPointRef(), pair.getPointRef()) >= 0 ? 1 : 0;
+            int actual = MathUtils.scalarMultiply(p.getPointRef(), w) >= 0 ? 1 : 0;
             if (p.getValue() == actual) {
                 correct++;
             }
             System.out.println("Expected " + p.getValue() + ", actual " + actual);
         }
-        System.out.println("Correct " + correct + "/" + original.size());
+        System.out.println("Correct " + correct + "/" + original.size() + " " + correct * 1.0 / original.size());
     }
 
     private static PointValuePair parse(String s) {

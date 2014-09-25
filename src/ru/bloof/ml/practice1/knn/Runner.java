@@ -1,7 +1,5 @@
 package ru.bloof.ml.practice1.knn;
 
-import static ru.bloof.ml.practice1.knn.PointClusterPair.parse;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
@@ -18,7 +16,7 @@ public class Runner {
     public static void main(String[] args) throws Exception {
         KNNSolver solver = new KNNSolver();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILENAME))) {
-            reader.lines().forEachOrdered(s -> solver.teach(parse(s)));
+            reader.lines().map(PointClusterPair::parse).forEachOrdered(solver::teach);
         }
 
         DistanceFunction f = new EuclideanDistanceFunction();
