@@ -11,8 +11,8 @@ import java.util.*;
  */
 public class Main {
     public static final String FILENAME = "supermarket.arff";
-    public static final double MIN_SUPPORT = 0.18;
-    public static final double MIN_CONF = 0.25;
+    public static final double MIN_SUPPORT = 0.05;
+    public static final double MIN_CONF = 0.45;
     private static final int MERGE_ATTR = 1;
 
     public static void main(String[] args) throws Exception {
@@ -103,8 +103,8 @@ public class Main {
             sum.or(_y);
             double support = count(buckets, sum) * 1. / buckets.size();
             double confidence = count(buckets, _x) * 1. / buckets.size();
-            double value = support / confidence;
-            if (value >= MIN_CONF) {
+            confidence = support / confidence;
+            if (confidence >= MIN_CONF) {
                 rules.add(new Rule(_x, _y, support, confidence));
             }
             if (_x.cardinality() > 1) {
