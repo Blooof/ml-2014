@@ -32,10 +32,6 @@ public class KNNSolver {
         Map<Integer, MutableInt> clusters = new HashMap<>();
         for (int i = 0; i < k; i++) {
             PointClusterPair pair = sorted.get(i);
-            if (f.distance(x, pair.getPoint()) == 0) {
-                System.out.println(format("Cluster=%d", pair.getCluster()));
-                return pair.getCluster();
-            }
             if (!clusters.containsKey(pair.getCluster())) {
                 clusters.put(pair.getCluster(), new MutableInt());
             }

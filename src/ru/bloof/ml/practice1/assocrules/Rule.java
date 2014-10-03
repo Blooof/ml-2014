@@ -16,6 +16,22 @@ public class Rule {
         this.conf = conf;
     }
 
+    public BitSet getX() {
+        return x;
+    }
+
+    public BitSet getY() {
+        return y;
+    }
+
+    public double getSup() {
+        return sup;
+    }
+
+    public double getConf() {
+        return conf;
+    }
+
     @Override
     public String toString() {
         return x + "->" + y + ":sup=" + sup + ",conf=" + conf;

@@ -1,17 +1,23 @@
 package ru.bloof.ml.practice1.assocrules;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
-
-import java.util.*;
 
 /**
  * @author Oleg Larionov
  */
 public class Main {
     public static final String FILENAME = "supermarket.arff";
-    public static final double MIN_SUPPORT = 0.05;
+    public static final double MIN_SUPPORT = 0.01;
     public static final double MIN_CONF = 0.45;
     private static final int MERGE_ATTR = 1;
 
@@ -88,7 +94,32 @@ public class Main {
                 findRules(rules, buckets, x, new BitSet());
             }
         }
-        System.out.println(rules);
+        print(data, rules);
+    }
+
+    private static void print(Instances data, List<Rule> rules) {
+        rules.stream().forEachOrdered(rule -> {
+            StringBuffer buffer = new StringBuffer();
+            buildString(buffer, rule.getX(), data);
+            buffer.append("->");
+            BitSet y = rule.getY();
+            buildString(buffer, y, data);
+            buffer.append(" sup=").append(rule.getSup()).append(" conf=").append(rule.getConf());
+            System.out.println(buffer);
+        });
+    }
+
+    private static void buildString(StringBuffer buffer, BitSet set, Instances data) {
+        int bit = 0;
+        boolean append = false;
+        while ((bit = set.nextSetBit(bit)) != -1) {
+            if (append) {
+                buffer.append(",");
+            }
+            append = true;
+            buffer.append(data.attribute(MERGE_ATTR).value(bit));
+            bit++;
+        }
     }
 
     private static void findRules(List<Rule> rules, Map<Long, Bucket> buckets, BitSet x, BitSet y) {
