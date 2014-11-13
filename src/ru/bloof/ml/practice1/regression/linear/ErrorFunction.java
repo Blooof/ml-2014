@@ -5,10 +5,9 @@ import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import org.apache.commons.math3.optimization.PointValuePair;
 import org.apache.commons.math3.util.FastMath;
+import ru.bloof.ml.MathUtils;
 
 import java.util.List;
-
-import ru.bloof.ml.practice1.MathUtils;
 
 /**
  * @author Oleg Larionov

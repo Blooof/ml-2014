@@ -1,13 +1,12 @@
 package ru.bloof.ml.practice1.regression.logit;
 
-import java.util.List;
-
 import org.apache.commons.math3.analysis.DifferentiableMultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import org.apache.commons.math3.optimization.PointValuePair;
+import ru.bloof.ml.MathUtils;
 
-import ru.bloof.ml.practice1.MathUtils;
+import java.util.List;
 
 /**
  * @author Oleg Larionov

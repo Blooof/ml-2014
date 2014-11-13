@@ -1,13 +1,5 @@
 package ru.bloof.ml.practice1.regression.linear;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.optimization.GoalType;
 import org.apache.commons.math3.optimization.PointValuePair;
@@ -15,8 +7,15 @@ import org.apache.commons.math3.optimization.SimplePointChecker;
 import org.apache.commons.math3.optimization.general.ConjugateGradientFormula;
 import org.apache.commons.math3.optimization.general.NonLinearConjugateGradientOptimizer;
 import org.apache.commons.math3.util.FastMath;
+import ru.bloof.ml.MathUtils;
 
-import ru.bloof.ml.practice1.MathUtils;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Oleg Larionov
