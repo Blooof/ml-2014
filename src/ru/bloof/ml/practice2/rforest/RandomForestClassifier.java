@@ -17,18 +17,27 @@ import java.util.concurrent.TimeUnit;
 public class RandomForestClassifier {
     private List<DecisionTree> trees;
 
-    public void teach(List<LabeledObject> objects, int treesCount, int objectsSelected, int featuresSelected, Norm norm) {
+    public void teach(List<LabeledObject> objects, int treesCount, int objectsSelected, int featuresSelected, Norm norm, List<Integer> selectedFeatures) {
         RandomGenerator rnd = new MersenneTwister();
         trees = new Vector<>();
         int featuresCount = objects.get(0).getFeatures().length;
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
         for (int i = 0; i < treesCount; i++) {
             List<LabeledObject> randomObjects = MathUtils.createRandomList(objects, rnd, objectsSelected);
-            List<Integer> randomFeatures = MathUtils.getRandomNumbers(featuresCount, rnd, featuresSelected);
+            List<Integer> randomFeatures;
+            if (selectedFeatures == null) {
+                randomFeatures = MathUtils.getRandomNumbers(featuresCount, rnd, featuresSelected);
+            } else {
+                randomFeatures = MathUtils.createRandomList(selectedFeatures, rnd, featuresSelected);
+            }
 
             executorService.submit(() -> {
                 DecisionTree tree = new DecisionTree();
-                tree.teach(randomObjects, randomFeatures, norm);
+                try {
+                    tree.teach(randomObjects, randomFeatures, norm);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 trees.add(tree);
             });
         }

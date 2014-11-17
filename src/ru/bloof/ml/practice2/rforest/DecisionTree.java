@@ -3,16 +3,16 @@ package ru.bloof.ml.practice2.rforest;
 import ru.bloof.ml.practice2.rforest.norm.Norm;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:blloof@gmail.com">Oleg Larionov</a>
  */
 public class DecisionTree {
     public static final double MAX_PROBABILITY = 0.95;
-    public static final int MIN_PART_SIZE = 1;
+    public static final int MIN_PART_SIZE = 2;
     private DecisionTreeNode rootNode;
 
     public void teach(List<LabeledObject> objects, List<Integer> features, Norm norm) {
@@ -40,7 +40,8 @@ public class DecisionTree {
         double minLeftProbs[] = null, minRightProbs[] = null, minLeftCost = 0, minRightCost = 0;
         List<LabeledObject> leftPart = null, rightPart = null;
         for (final int feature : features) {
-            List<LabeledObject> sortedObjects = currentEntity.objects.parallelStream().sorted((o1, o2) -> o1.getFeatures()[feature] - o2.getFeatures()[feature]).collect(Collectors.toList());
+            currentEntity.objects.sort((o1, o2) -> o1.getFeatures()[feature] - o2.getFeatures()[feature]);
+            List<LabeledObject> sortedObjects = currentEntity.objects;
             int[] leftCounts = new int[2], rightCounts = new int[2];
             for (LabeledObject o : sortedObjects) {
                 rightCounts[o.getLabel()]++;
@@ -63,8 +64,8 @@ public class DecisionTree {
                     minRightProbs = rightProbs;
                     minLeftCost = leftCost;
                     minRightCost = rightCost;
-                    leftPart = sortedObjects.subList(0, i + 1);
-                    rightPart = sortedObjects.subList(i + 1, sortedObjects.size());
+                    leftPart = new ArrayList<>(sortedObjects.subList(0, i + 1));
+                    rightPart = new ArrayList<>(sortedObjects.subList(i + 1, sortedObjects.size()));
                 }
             }
         }
@@ -75,13 +76,14 @@ public class DecisionTree {
         }
     }
 
-    private DecisionTreeNode buildNode(Queue<Entity> q, double[] minRightProbs, double minRightCost, List<LabeledObject> rightPart) {
-        DecisionTreeNode right = new DecisionTreeNode(minRightProbs);
-        Entity rightEntity = new Entity(right, minRightCost, rightPart);
-        if (!(rightPart.size() <= MIN_PART_SIZE || minRightProbs[0] >= MAX_PROBABILITY || minRightProbs[1] >= MAX_PROBABILITY)) {
-            q.add(rightEntity);
+    private DecisionTreeNode buildNode(Queue<Entity> q, double[] probs, double cost, List<LabeledObject> objects) {
+        DecisionTreeNode node = new DecisionTreeNode(probs);
+        Entity entity = new Entity(node, cost, objects);
+        if (objects.size() < MIN_PART_SIZE || probs[0] >= MAX_PROBABILITY || probs[1] >= MAX_PROBABILITY) {
+            return node;
         }
-        return right;
+        q.add(entity);
+        return node;
     }
 
     public double[] classify(int[] features) {
