@@ -18,9 +18,9 @@ public class Runner {
     public static final String TEST_LABELS_PATH = "data/random_forest/arcene_valid.labels";
     public static final int FEATURES_COUNT = 10000;
     public static final int OBJECTS_COUNT = 100;
-    public static final int TREES_COUNT = 40;
+    public static final int TREES_COUNT = 30;
     public static final int M = (int) FastMath.sqrt(FEATURES_COUNT);
-    public static final int N = 70;
+    public static final int N = 100;
 
     public static void main(String[] args) throws Exception {
         List<LabeledObject> trainSet = new ArrayList<>();
@@ -50,22 +50,22 @@ public class Runner {
                 }
                 int myLabel = classifier.classify(features);
                 int label = Math.max(Integer.parseInt(testLabels.readLine()), 0); // 0-1
-                if (myLabel == 1) {
-                    if (label == 1) {
+                if (label == 1) {
+                    if (myLabel == 1) {
                         correct++;
                         totalCorrect++;
                     } else {
-                        fp = 1;
+                        wrong++;
                     }
-                } else if (label == 1) {
-                    wrong++;
-                } else {
+                } else if (myLabel == 0) {
                     totalCorrect++;
+                } else {
+                    fp++;
                 }
                 trainSet.add(new LabeledObject(features, label));
             }
         }
         System.out.println(totalCorrect + "/" + OBJECTS_COUNT);
-        System.out.println(String.format("precision=%f recall=%f", 1. * correct / (correct + fp), 1. * correct / (correct + wrong)));
+        System.out.println(String.format("found=%d/%d precision=%f recall=%f", correct, correct + wrong, 1. * correct / (correct + fp), 1. * correct / (correct + wrong)));
     }
 }

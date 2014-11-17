@@ -6,9 +6,7 @@ import org.apache.commons.math3.optimization.PointValuePair;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.FastMath;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author Oleg Larionov
@@ -47,9 +45,13 @@ public class MathUtils {
     public static <T> List<T> createRandomList(List<T> list, RandomGenerator rnd, int count) {
         List<T> randomList = new ArrayList<>();
         int size = list.size();
-        for (int i = 0; i < count; i++) {
+        Set<Integer> used = new HashSet<>();
+        while (randomList.size() < count) {
             int num = rnd.nextInt(size);
-            randomList.add(list.get(num));
+            if (!used.contains(num)) {
+                randomList.add(list.get(num));
+                used.add(num);
+            }
         }
         return randomList;
     }
