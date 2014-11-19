@@ -1,5 +1,7 @@
 package ru.bloof.ml.practice2.rforest;
 
+import org.apache.commons.lang3.mutable.MutableDouble;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomGenerator;
 import ru.bloof.ml.MathUtils;
@@ -22,19 +24,40 @@ public class RandomForestClassifier {
         trees = new Vector<>();
         int featuresCount = objects.get(0).getFeatures().length;
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
+        MutableDouble avgPrecision = new MutableDouble(), avgRecall = new MutableDouble();
         for (int i = 0; i < treesCount; i++) {
-            List<LabeledObject> randomObjects = MathUtils.createRandomList(objects, rnd, objectsSelected);
+            Pair<List<LabeledObject>, List<LabeledObject>> splitObjects = MathUtils.splitList(objects, rnd, objectsSelected, true);
             List<Integer> randomFeatures;
             if (selectedFeatures == null) {
                 randomFeatures = MathUtils.getRandomNumbers(featuresCount, rnd, featuresSelected);
             } else {
-                randomFeatures = MathUtils.createRandomList(selectedFeatures, rnd, featuresSelected);
+                randomFeatures = MathUtils.splitList(selectedFeatures, rnd, featuresSelected, false).getLeft();
             }
-
             executorService.submit(() -> {
                 DecisionTree tree = new DecisionTree();
                 try {
-                    tree.teach(randomObjects, randomFeatures, norm);
+                    tree.teach(splitObjects.getLeft(), randomFeatures, norm);
+                    double correct = 0, selected = 0, fn = 0;
+                    for (LabeledObject testObject : splitObjects.getRight()) {
+                        double[] probs = tree.classify(testObject.getFeatures());
+                        int myLabel = MathUtils.max(probs);
+                        if (myLabel == 1) {
+                            selected++;
+                            if (testObject.getLabel() == 1) {
+                                correct++;
+                            }
+                        } else if (testObject.getLabel() == 1) {
+                            fn++;
+                        }
+                    }
+                    synchronized (avgPrecision) {
+                        if (selected > 0) {
+                            avgPrecision.add(correct / selected);
+                        }
+                        if (correct + fn > 0) {
+                            avgRecall.add(correct / (correct + fn));
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -45,6 +68,7 @@ public class RandomForestClassifier {
         try {
             executorService.awaitTermination(100, TimeUnit.HOURS);
             System.out.println("Forest is ready");
+            System.out.println(String.format("avg precision=%f, avg recall=%f", avgPrecision.doubleValue() / treesCount, avgRecall.doubleValue() / treesCount));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

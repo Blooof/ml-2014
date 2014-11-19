@@ -6,9 +6,7 @@ import org.apache.commons.math3.optimization.PointValuePair;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.FastMath;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author Oleg Larionov
@@ -44,14 +42,37 @@ public class MathUtils {
         return result;
     }
 
-    public static <T> List<T> createRandomList(List<T> list, RandomGenerator rnd, int count) {
-        List<T> randomList = new ArrayList<>();
+    public static <T> Pair<List<T>, List<T>> splitList(List<T> list, RandomGenerator rnd, int count, boolean dupl) {
+        List<T> selected = new ArrayList<>(), remained = new ArrayList<>();
         int size = list.size();
-        while (randomList.size() < count) {
+        Set<Integer> used = new HashSet<>();
+        while (selected.size() < count) {
             int num = rnd.nextInt(size);
-            randomList.add(list.get(num));
+            if (!dupl && used.contains(num)) {
+                continue;
+            }
+            used.add(num);
+            selected.add(list.get(num));
         }
-        return randomList;
+
+        for (int i = 0; i < list.size(); i++) {
+            if (!used.contains(i)) {
+                remained.add(list.get(i));
+            }
+        }
+        return Pair.of(selected, remained);
+    }
+
+    public static int max(double[] a) {
+        int index = 0;
+        double max = a[index];
+        for (int i = 1; i < a.length; i++) {
+            if (max < a[i]) {
+                max = a[i];
+                index = i;
+            }
+        }
+        return index;
     }
 
     public static List<Integer> getRandomNumbers(int max, RandomGenerator rnd, int count) {
