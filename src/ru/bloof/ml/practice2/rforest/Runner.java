@@ -18,11 +18,11 @@ public class Runner {
     public static final String TEST_LABELS_PATH = "data/random_forest/arcene_valid.labels";
     public static final int FEATURES_COUNT = 10000;
     public static final int OBJECTS_COUNT = 100;
-    public static final int TREES_COUNT = 5;
+    public static final int TREES_COUNT = 20;
     public static final int M = (int) FastMath.sqrt(FEATURES_COUNT);
     public static final int N = 100;
     public static final double MIN_PEARSON_COEF = 0.2;
-    public static final boolean USE_FEATURE_SELECTING = true;
+    public static final boolean USE_FEATURE_SELECTING = false;
 
     public static void main(String[] args) throws Exception {
         List<LabeledObject> trainSet = new ArrayList<>();

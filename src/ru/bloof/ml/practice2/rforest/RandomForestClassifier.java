@@ -29,7 +29,7 @@ public class RandomForestClassifier {
             Pair<List<LabeledObject>, List<LabeledObject>> splitObjects = MathUtils.splitList(objects, rnd, objectsSelected, true);
             List<Integer> randomFeatures;
             if (selectedFeatures == null) {
-                randomFeatures = MathUtils.getRandomNumbers(featuresCount, rnd, featuresSelected);
+                randomFeatures = MathUtils.getRandomNumbers(featuresCount, rnd, featuresSelected, false);
             } else {
                 randomFeatures = MathUtils.splitList(selectedFeatures, rnd, featuresSelected, false).getLeft();
             }

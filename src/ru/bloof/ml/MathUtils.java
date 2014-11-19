@@ -75,10 +75,16 @@ public class MathUtils {
         return index;
     }
 
-    public static List<Integer> getRandomNumbers(int max, RandomGenerator rnd, int count) {
+    public static List<Integer> getRandomNumbers(int max, RandomGenerator rnd, int count, boolean dupl) {
         List<Integer> numbers = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            numbers.add(rnd.nextInt(max));
+        Set<Integer> features = new HashSet<>();
+        while (numbers.size() < count) {
+            int num = rnd.nextInt(max);
+            if (!dupl && features.contains(num)) {
+                continue;
+            }
+            features.add(num);
+            numbers.add(num);
         }
         return numbers;
     }
