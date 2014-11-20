@@ -1,6 +1,5 @@
 package ru.bloof.ml.practice2.rforest;
 
-import org.apache.commons.math3.util.FastMath;
 import ru.bloof.ml.practice2.rforest.norm.GiniIndex;
 
 import java.io.BufferedReader;
@@ -19,8 +18,6 @@ public class Runner {
     public static final int FEATURES_COUNT = 10000;
     public static final int OBJECTS_COUNT = 100;
     public static final int TREES_COUNT = 20;
-    public static final int M = (int) FastMath.sqrt(FEATURES_COUNT);
-    public static final int N = 100;
     public static final double MIN_PEARSON_COEF = 0.2;
     public static final boolean USE_FEATURE_SELECTING = false;
 
@@ -47,7 +44,7 @@ public class Runner {
             System.out.println("features selected = " + selectedFeatures.size());
         }
         RandomForestClassifier classifier = new RandomForestClassifier();
-        classifier.teach(trainSet, TREES_COUNT, N, M, new GiniIndex(), selectedFeatures);
+        classifier.teach(trainSet, TREES_COUNT, new GiniIndex(), selectedFeatures);
 
         int correct = 0, fp = 1, wrong = 0, totalCorrect = 0;
         try (BufferedReader testData = new BufferedReader(new FileReader(TEST_DATA_PATH));
