@@ -4,6 +4,7 @@ import ru.bloof.ml.practice4.bnetwork.Event;
 import ru.bloof.ml.practice4.bnetwork.Evidence;
 
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,13 +57,16 @@ public class Factor {
         newScope.addAll(other.getScope());
         Set<Event> intersection = new HashSet<>(scope);
         intersection.retainAll(other.getScope());
+        if (intersection.isEmpty()) {
+            throw new IllegalArgumentException("Cannot multiply factors without intersection");
+        }
 
         Map<Set<Evidence>, Double> newFunction = new HashMap<>();
         for (Map.Entry<Set<Evidence>, Double> entry1 : function.entrySet()) {
             for (Map.Entry<Set<Evidence>, Double> entry2 : other.values().entrySet()) {
                 Set<Evidence> total = new HashSet<>(entry1.getKey());
                 total.retainAll(entry2.getKey());
-                boolean good = total.size() != 0 && total.parallelStream().allMatch(ev -> intersection.contains(ev.getEvent()));
+                boolean good = total.size() == intersection.size() && total.parallelStream().allMatch(ev -> intersection.contains(ev.getEvent()));
                 if (good) {
                     Set<Evidence> newEvidences = new HashSet<>(entry1.getKey());
                     newEvidences.addAll(entry2.getKey());
@@ -115,5 +119,13 @@ public class Factor {
     }
 
     public void print(OutputStream os) {
+        try (PrintWriter pw = new PrintWriter(os)) {
+            String s = scope.parallelStream().map(Enum::toString).collect(Collectors.joining(",", "Scope=", ""));
+            pw.println(s);
+
+            for (Map.Entry<Set<Evidence>, Double> entry : function.entrySet()) {
+                pw.println(entry.getKey().parallelStream().map(Evidence::toString).collect(Collectors.joining(",")) + "->" + entry.getValue());
+            }
+        }
     }
 }

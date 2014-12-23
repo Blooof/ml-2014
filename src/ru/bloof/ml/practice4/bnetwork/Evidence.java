@@ -38,4 +38,9 @@ public class Evidence {
         final Evidence other = (Evidence) obj;
         return Objects.equals(this.event, other.event) && Objects.equals(this.value, other.value);
     }
+
+    @Override
+    public String toString() {
+        return "Evidence[" + event + "=" + value + "]";
+    }
 }

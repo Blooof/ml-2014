@@ -49,14 +49,16 @@ public class BayesNetwork {
         }
 
         // eliminate variables
-        for (Event e : varsToRemove) {
-            List<Factor> newFactors = reducedFactors.stream().filter(f -> f.inScope(e)).collect(Collectors.toList());
+        while (!varsToRemove.isEmpty()) {
+            final Event eliminatedEvent = findMinEvent(reducedFactors, varsToRemove);
+            varsToRemove.remove(eliminatedEvent);
+            List<Factor> newFactors = reducedFactors.stream().filter(f -> f.inScope(eliminatedEvent)).collect(Collectors.toList());
             if (newFactors.isEmpty()) {
                 continue;
             }
             reducedFactors.removeAll(newFactors);
             Factor multiFactor = multiplyFactors(newFactors);
-            multiFactor = multiFactor.marginalize(e);
+            multiFactor = multiFactor.marginalize(eliminatedEvent);
             if (!multiFactor.getScope().isEmpty()) {
                 reducedFactors.add(multiFactor);
             }
@@ -66,6 +68,24 @@ public class BayesNetwork {
         Factor resultFactor = multiplyFactors(reducedFactors);
         resultFactor.normalize();
         return resultFactor;
+    }
+
+    private Event findMinEvent(List<Factor> reducedFactors, Set<Event> varsToRemove) {
+        int[] counts = new int[Event.values().length];
+        for (Factor f : reducedFactors) {
+            for (Event e : f.getScope()) {
+                counts[e.ordinal()]++;
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        Event minEvent = null;
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] > 0 && counts[i] < min && varsToRemove.contains(Event.values()[i])) {
+                min = counts[i];
+                minEvent = Event.values()[i];
+            }
+        }
+        return minEvent;
     }
 
     private Factor multiplyFactors(List<Factor> factors) {
