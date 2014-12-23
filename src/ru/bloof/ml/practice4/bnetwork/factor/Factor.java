@@ -3,7 +3,6 @@ package ru.bloof.ml.practice4.bnetwork.factor;
 import ru.bloof.ml.practice4.bnetwork.Event;
 import ru.bloof.ml.practice4.bnetwork.Evidence;
 
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -118,14 +117,13 @@ public class Factor {
         return reducedScope;
     }
 
-    public void print(OutputStream os) {
-        try (PrintWriter pw = new PrintWriter(os)) {
-            String s = scope.parallelStream().map(Enum::toString).collect(Collectors.joining(",", "Scope=", ""));
-            pw.println(s);
+    public void print(PrintWriter pw) {
+        String s = scope.parallelStream().map(Enum::toString).collect(Collectors.joining(",", "Scope=", ""));
+        pw.println(s);
 
-            for (Map.Entry<Set<Evidence>, Double> entry : function.entrySet()) {
-                pw.println(entry.getKey().parallelStream().map(Evidence::toString).collect(Collectors.joining(",")) + "->" + entry.getValue());
-            }
+        for (Map.Entry<Set<Evidence>, Double> entry : function.entrySet()) {
+            pw.println(entry.getKey().parallelStream().map(Evidence::toString).collect(Collectors.joining(",")) + "->" + entry.getValue());
         }
+        pw.flush();
     }
 }
