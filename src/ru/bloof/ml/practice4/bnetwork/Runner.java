@@ -19,12 +19,6 @@ public class Runner {
     public static void main(String[] args) throws Exception {
         BayesNetwork network = NetworkParser.parse(FILENAME);
         run(network);
-//        Set<Event> scope = new HashSet<>();
-//        Collections.addAll(scope, Event.Lightning);
-//        Set<Evidence> evidences = new HashSet<>();
-//        Collections.addAll(evidences, new Evidence(Event.Storm, true));
-//        Factor f = network.eliminate(scope, evidences);
-//        f.print(System.out);
     }
 
     private static void run(BayesNetwork network) throws IOException {
