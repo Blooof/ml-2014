@@ -7,6 +7,7 @@ import ru.bloof.ml.practice4.bnetwork.factor.Factor;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -154,6 +155,12 @@ public class NetworkParser {
         if (!checkDAG(graph)) {
             throw new IllegalArgumentException("Graph is not DAG");
         }
+
+        // print graph to file
+        try (PrintWriter pw = new PrintWriter("graph.dot")) {
+            GraphPrinter.print(graph, pw);
+        }
+        Runtime.getRuntime().exec("/usr/local/bin/dot -Tpng -ograph.png graph.dot");
 
         return createNetwork(probs);
     }
